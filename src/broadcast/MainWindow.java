@@ -18,12 +18,15 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Scanner;
-
+import java.util.Map;
+import java.util.HashMap;
+import com.google.gson.Gson;
 /**
  *
  * @author uzielgl
  */
 public class MainWindow extends javax.swing.JFrame {
+    public Map<String,HashMap> config;
 
     /**
      * Creates new form MainWindow
@@ -157,7 +160,8 @@ public class MainWindow extends javax.swing.JFrame {
                 while( config_scanner.hasNext() ){
                     config_text += config_scanner.next();
                 }
-                System.out.println(config_text);
+                Gson gson = new Gson();
+                config = gson.fromJson( config_text, Map.class );
             }catch(IOException e){
                 
             }
