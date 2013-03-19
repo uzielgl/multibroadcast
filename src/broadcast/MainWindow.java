@@ -31,6 +31,7 @@ import java.awt.event.ActionListener;
 
 import java.net.*;
 import java.io.*;
+import java.util.ArrayList;
 
 /**
  *
@@ -43,8 +44,10 @@ public class MainWindow extends javax.swing.JFrame {
     public Map<String,HashMap> servers;
     
     public UDPServer udpServer;
-    public UDPClient udpClient = new UDPClient();
-
+    
+    BroadAlgorithm broad;
+    
+    ArrayList proccessBtns = new ArrayList();
     /**
      * Creates new form MainWindow
      */
@@ -59,16 +62,12 @@ public class MainWindow extends javax.swing.JFrame {
         */
     }
     
-    public void sendMessage(String proccess, String msg){
-        Map<String,String> pro = servers.get( proccess );
-        udpClient.sendMessage(pro.get("ip"), pro.get("port"), msg);
-    }
     
     public void startServer(){
         //Inicializamos el servidor
         String key_client = client.keySet().iterator().next();
         Map<String,String> map_client = client.get(key_client);
-        udpServer = new UDPServer( map_client.get( "ip" ), map_client.get("port") );
+        udpServer = new UDPServer( map_client.get( "ip" ), map_client.get("port"), this );
         udpServer.start();
     }
 
@@ -184,6 +183,7 @@ public class MainWindow extends javax.swing.JFrame {
             loadConfig( fileChooser.getSelectedFile() );
             createSendButtons();
             startServer();
+            broad = new BroadAlgorithm(this);
         }
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
@@ -217,14 +217,22 @@ public class MainWindow extends javax.swing.JFrame {
     
     public void addAButton(String text, Container container) {
         javax.swing.JButton button = new javax.swing.JButton(text);
+        proccessBtns.add( button );
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
         button.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 String proccess = ( (javax.swing.JButton) e.getSource() ).getText();
-                sendMessage(proccess, txtMessage.getText());
+                broad.sendMessage(proccess, txtMessage.getText());
             }
         });
         container.add(button);
+    }
+    
+    /** 
+     * Agrega los mensajes al txtHistory
+     */
+    public void addHistory( String msg ){
+        txtHistory.setText( txtHistory.getText() + "\n" + msg);
     }
   
     /**

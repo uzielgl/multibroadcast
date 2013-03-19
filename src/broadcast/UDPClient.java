@@ -15,9 +15,6 @@ public class UDPClient{
 
     
     public void sendMessage(String ip, String port, String msg){
-        System.out.println(ip);
-        System.out.println(port);
-        System.out.println(msg);
         try {
 		DatagramSocket aSocket = new DatagramSocket();    
 		byte [] m = msg.getBytes();
@@ -27,8 +24,7 @@ public class UDPClient{
 		aSocket.send(request);			                        
 		byte[] buffer = new byte[1000];
 		DatagramPacket reply = new DatagramPacket(buffer, buffer.length);	
-		aSocket.receive(reply);
-		System.out.println("Reply: " + new String(reply.getData()));	
+		//aSocket.receive(reply);
 		aSocket.close();
 	  }catch (SocketException e){
               System.out.println("Socket: " + e.getMessage());
