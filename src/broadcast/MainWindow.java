@@ -23,18 +23,26 @@ import java.util.HashMap;
 import com.google.gson.Gson;
 import java.awt.Component;
 import java.awt.Container;
+import java.util.Iterator;
 /**
  *
  * @author uzielgl
  */
 public class MainWindow extends javax.swing.JFrame {
     public Map<String,HashMap> config;
+    public Gson gson = new Gson();
+    public Map<String,HashMap> client;
+    public Map<String,HashMap> servers;
 
     /**
      * Creates new form MainWindow
      */
     public MainWindow() {
+        //Para crear mapas:
+        //Map<String,HashMap> tmp = new HashMap<String,HashMap>();
+        
         initComponents();
+        loadConfig( new File( "C:\\Users\\uzielgl\\Documents\\p1.txt" ) );
         createSendButtons();
     }
 
@@ -149,28 +157,35 @@ public class MainWindow extends javax.swing.JFrame {
         fileChooser.setFileFilter(new FileNameExtensionFilter("Archivos de texto: (.txt)", "txt"));
         int seleccion = fileChooser.showOpenDialog(this);
         if ( seleccion == JFileChooser.APPROVE_OPTION ){
-            File config_file = fileChooser.getSelectedFile();
-            try{
-                Scanner config_scanner = new Scanner( config_file );
-                String config_text = "";
-                while( config_scanner.hasNext() ){
-                    config_text += config_scanner.next();
-                }
-                Gson gson = new Gson();
-                config = gson.fromJson( config_text, Map.class );
-                createSendButtons();
-            }catch(IOException e){
-                
-            }
+            loadConfig( fileChooser.getSelectedFile() );
+            createSendButtons();
         }
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
+    public void loadConfig( File config_file){
+        try{
+            Scanner config_scanner = new Scanner( config_file );
+            String config_text = "";
+            while( config_scanner.hasNext() ){
+                config_text += config_scanner.next();
+            }
+            config = gson.fromJson( config_text, Map.class );
+            client = config.get("client");
+            servers = config.get("servers");
+        }catch(IOException e){
+        }
+    }    
+    
     public void createSendButtons(){
         javax.swing.JLabel lbl = new javax.swing.JLabel("Enviar a:");
         lbl.setAlignmentX( Component.CENTER_ALIGNMENT );
         pnlSendButtons.add( lbl );
         
-        
+        Iterator it = servers.entrySet().iterator();
+        while( it.hasNext() ){
+            Map.Entry e = (Map.Entry) it.next();
+            addAButton( (String) e.getKey(), pnlSendButtons );
+        }
         pnlSendButtons.repaint();
     }
     
