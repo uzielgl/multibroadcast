@@ -24,6 +24,11 @@ import com.google.gson.Gson;
 import java.awt.Component;
 import java.awt.Container;
 import java.util.Iterator;
+import java.util.Set;
+
+import java.net.*;
+import java.io.*;
+
 /**
  *
  * @author uzielgl
@@ -33,6 +38,8 @@ public class MainWindow extends javax.swing.JFrame {
     public Gson gson = new Gson();
     public Map<String,HashMap> client;
     public Map<String,HashMap> servers;
+    
+    public UDPServer server;
 
     /**
      * Creates new form MainWindow
@@ -40,10 +47,16 @@ public class MainWindow extends javax.swing.JFrame {
     public MainWindow() {
         //Para crear mapas:
         //Map<String,HashMap> tmp = new HashMap<String,HashMap>();
-        
         initComponents();
         loadConfig( new File( "C:\\Users\\uzielgl\\Documents\\p1.txt" ) );
         createSendButtons();
+        
+        //Inicializamos el servidor
+        String key_client = client.keySet().iterator().next();
+        Map<String,String> map_client = client.get(key_client);
+        
+        server = new UDPServer( map_client.get( "ip" ), map_client.get("port") );
+        server.start();
     }
 
     /**
@@ -58,14 +71,14 @@ public class MainWindow extends javax.swing.JFrame {
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        txtMessage = new javax.swing.JTextArea();
         pnlSendButtons = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jFileChooser1 = new javax.swing.JFileChooser();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea2 = new javax.swing.JTextArea();
+        txtHistory = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu2 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -76,9 +89,9 @@ public class MainWindow extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        txtMessage.setColumns(20);
+        txtMessage.setRows(5);
+        jScrollPane1.setViewportView(txtMessage);
 
         pnlSendButtons.setLayout(new javax.swing.BoxLayout(pnlSendButtons, javax.swing.BoxLayout.Y_AXIS));
 
@@ -97,9 +110,9 @@ public class MainWindow extends javax.swing.JFrame {
 
         jButton2.setText("jButton2");
 
-        jTextArea2.setColumns(20);
-        jTextArea2.setRows(5);
-        jScrollPane2.setViewportView(jTextArea2);
+        txtHistory.setColumns(20);
+        txtHistory.setRows(5);
+        jScrollPane2.setViewportView(txtHistory);
 
         jMenu2.setText("Archivo");
 
@@ -241,8 +254,8 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextArea jTextArea2;
     private javax.swing.JPanel pnlSendButtons;
+    private javax.swing.JTextArea txtHistory;
+    private javax.swing.JTextArea txtMessage;
     // End of variables declaration//GEN-END:variables
 }
