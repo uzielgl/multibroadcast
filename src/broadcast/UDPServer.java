@@ -17,16 +17,14 @@ public class UDPServer extends Thread{
     public UDPServer( String ip, String port ){
         this.ip = ip;
         this.port = port;
-        System.out.println(port);
-        System.out.println(ip);
     }
     
     public void run(){
+        System.out.println("Levantando el servidor UDP");
         try{
-            DatagramSocket aSocket = new DatagramSocket(6789);
+            DatagramSocket aSocket = new DatagramSocket( Integer.parseInt( port ) );
             byte[] buffer = new byte[1000];
             while(true){
-                System.out.println("HOLA");
                 DatagramPacket request = new DatagramPacket(buffer, buffer.length);
                 aSocket.receive(request);     
                 DatagramPacket reply = new DatagramPacket(request.getData(), 

@@ -26,6 +26,9 @@ import java.awt.Container;
 import java.util.Iterator;
 import java.util.Set;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import java.net.*;
 import java.io.*;
 
@@ -39,7 +42,8 @@ public class MainWindow extends javax.swing.JFrame {
     public Map<String,HashMap> client;
     public Map<String,HashMap> servers;
     
-    public UDPServer server;
+    public UDPServer udpServer;
+    public UDPClient udpClient = new UDPClient();
 
     /**
      * Creates new form MainWindow
@@ -48,15 +52,24 @@ public class MainWindow extends javax.swing.JFrame {
         //Para crear mapas:
         //Map<String,HashMap> tmp = new HashMap<String,HashMap>();
         initComponents();
+        
+        /*
         loadConfig( new File( "C:\\Users\\uzielgl\\Documents\\p1.txt" ) );
         createSendButtons();
-        
+        */
+    }
+    
+    public void sendMessage(String proccess, String msg){
+        Map<String,String> pro = servers.get( proccess );
+        udpClient.sendMessage(pro.get("ip"), pro.get("port"), msg);
+    }
+    
+    public void startServer(){
         //Inicializamos el servidor
         String key_client = client.keySet().iterator().next();
         Map<String,String> map_client = client.get(key_client);
-        
-        server = new UDPServer( map_client.get( "ip" ), map_client.get("port") );
-        server.start();
+        udpServer = new UDPServer( map_client.get( "ip" ), map_client.get("port") );
+        udpServer.start();
     }
 
     /**
@@ -134,15 +147,13 @@ public class MainWindow extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 501, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 474, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(pnlSendButtons, javax.swing.GroupLayout.PREFERRED_SIZE, 265, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(pnlSendButtons, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -172,6 +183,7 @@ public class MainWindow extends javax.swing.JFrame {
         if ( seleccion == JFileChooser.APPROVE_OPTION ){
             loadConfig( fileChooser.getSelectedFile() );
             createSendButtons();
+            startServer();
         }
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
@@ -189,7 +201,7 @@ public class MainWindow extends javax.swing.JFrame {
         }
     }    
     
-    public void createSendButtons(){
+    public void createSendButtons(){ 
         javax.swing.JLabel lbl = new javax.swing.JLabel("Enviar a:");
         lbl.setAlignmentX( Component.CENTER_ALIGNMENT );
         pnlSendButtons.add( lbl );
@@ -199,12 +211,19 @@ public class MainWindow extends javax.swing.JFrame {
             Map.Entry e = (Map.Entry) it.next();
             addAButton( (String) e.getKey(), pnlSendButtons );
         }
+        pnlSendButtons.revalidate();
         pnlSendButtons.repaint();
     }
     
-    private static void addAButton(String text, Container container) {
+    public void addAButton(String text, Container container) {
         javax.swing.JButton button = new javax.swing.JButton(text);
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
+        button.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                String proccess = ( (javax.swing.JButton) e.getSource() ).getText();
+                sendMessage(proccess, txtMessage.getText());
+            }
+        });
         container.add(button);
     }
   
