@@ -56,12 +56,18 @@ public class MainWindow extends javax.swing.JFrame {
         //Map<String,HashMap> tmp = new HashMap<String,HashMap>();
         initComponents();
         
-        /*
-        loadConfig( new File( "C:\\Users\\uzielgl\\Documents\\p1.txt" ) );
-        createSendButtons();
-        */
+        
+        //loadConfig( new File( "C:\\Users\\uzielgl\\Documents\\p1.txt" ) );
+        //createSendButtons();
+        
     }
     
+    public MainWindow( File file_config, String title ){
+        initComponents();
+        
+        loadConfig( file_config );
+        this.setTitle(title);
+    }
     
     public void startServer(){
         //Inicializamos el servidor
@@ -181,9 +187,7 @@ public class MainWindow extends javax.swing.JFrame {
         int seleccion = fileChooser.showOpenDialog(this);
         if ( seleccion == JFileChooser.APPROVE_OPTION ){
             loadConfig( fileChooser.getSelectedFile() );
-            createSendButtons();
-            startServer();
-            broad = new BroadAlgorithm(this);
+            
         }
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
@@ -199,6 +203,9 @@ public class MainWindow extends javax.swing.JFrame {
             servers = config.get("servers");
         }catch(IOException e){
         }
+        createSendButtons();
+        startServer();
+        broad = new BroadAlgorithm(this);
     }    
     
     public void createSendButtons(){ 
