@@ -19,7 +19,10 @@ public class UDPClient{
 		DatagramSocket aSocket = new DatagramSocket();    
 		byte [] m = msg.getBytes();
 		InetAddress aHost = InetAddress.getByName(ip);
-		int serverPort = Integer.parseInt( port );		                                                 
+		int serverPort = Integer.parseInt( port );
+                System.out.print("Mensaje a enviar desde el cliente udp: ");
+                System.out.println(msg);
+                
 		DatagramPacket request = new DatagramPacket(m,  msg.length(), aHost, serverPort);
 		aSocket.send(request);			                        
 		byte[] buffer = new byte[1000];

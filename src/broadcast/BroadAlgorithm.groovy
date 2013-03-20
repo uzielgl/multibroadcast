@@ -43,31 +43,134 @@ class BroadAlgorithm {
     public Map servers;
     public MainWindow frame;
     public Gson gson = new Gson();
+    public int vector_pos;
+    
+    public VT = [0,0,0,0];
+    public hm = [];
+    public ci = [];
+    public message_send = [];
     
     public BroadAlgorithm( MainWindow frame ){
         this.frame = frame;
         config = frame.config;
         client = config.get("client");
         servers = config.get("servers");
+        
+        vector_pos = Integer.parseInt( client.keySet().iterator().next()[1] ) - 1 ;
+        
     }
     
     /**
      * proccess es el proceso al que se envia p1|p2|p3|p4 
      **/
     public sendMessage(proccess, msg){
-        String pro = client.keySet().iterator().next(); //El proceso actual
-        def message = [ msg : msg, proccess : pro ]; //Agregar todas las demás variables
-        
-        udpClient.sendMessage( servers[proccess]["ip"], servers[proccess]["port"], gson.toJson(message) );
-        
         //Se debe de mostrar el mensaje enviado cada vez que den click a Enviar a ? 
-        addHistory( message );
+        if( allActives() ){ //Aquí es en la difusión del mensaje
+            VT[ vector_pos ]++;
+            hm = ci;
+            message_send = [ vector_pos, VT[ vector_pos], msg, hm];
+            ci = [];
+            addHistory( message_send );
+        }
         
+        //String pro = client.keySet().iterator().next(); //El proceso actual
+        //def message = [ msg : msg, proccess : pro, vector_pos : vector_pos, i : vector_pos,  ]; //Agregar todas las demás variables
+        print "Envia: ";
+        print message_send;
+        print "\n";
+        print "Envia en json:";
+        print gson.toJson(message_send);
+        print "\n";
+        
+        udpClient.sendMessage( servers[proccess]["ip"], servers[proccess]["port"], gson.toJson(message_send) );
+        
+        
+        enableTxtMessage(false);
         disableBtnProccess( proccess  );
         
         if( allDisableBtnsProccess() ){
             enableAllBtnsProccess();
+            enableTxtMessage(true);
         }
+    }
+    
+    public receiveMessage( message ){
+        print "recibe";
+        println message;
+        int k = message[0];
+        int tk = message[1];
+        def hm = message[3];
+        if( ! ( ( tk == ( VT[ k ] + 1 ) ) && isCausal(VT, hm) ) ){
+            print "wait... Encolar el mensaje y con cada recepción intentar entregarlo (llamar a esta misma función)";
+        }else{
+            addHistory( message );
+            VT[k]++;
+            ci = deleteKS( k, ci); 
+            
+            ci.add( [k, tk] );
+            ci = deleteHmCi( hm, ci);
+        }
+    }
+    
+    /** Elimina todas las tuplas de Hm que están en Ci
+    * Nota: Regresa tuplas repetidas
+    **/
+    def deleteHmCi(Hm, Ci){
+        Iterator it_ci = Ci.iterator();
+        def new_ci = [];
+        while( it_ci.hasNext() ) {
+            def t_ci = it_ci.next();
+            Iterator it_hm = Hm.iterator();
+            def add = true;
+            while( it_hm.hasNext() ) {
+                def t_hm = it_hm.next();
+                if(  t_ci[0] == t_hm[0] && t_ci[1] == t_hm[1]  ){
+                    add = false;
+                    break;
+                }
+            }
+            if (add == true){
+               new_ci.add( t_ci );
+            }
+        }
+        return new_ci;
+    }
+
+    
+    /** Elimina todas las tuplas que k=s del ci
+     **/
+    public deleteKS( int k, ArrayList ci ){
+        Iterator it = ci.iterator();
+        def new_ci = [];
+        while( it.hasNext() ){
+            def t = it.next();
+            if( !( t[0] == k ) )
+                new_ci.add( t );
+        }
+        return new_ci;
+    }
+    
+    
+    
+    /** Define si pasa la condición causal
+     * @param vt [1,0,1,2]
+     * @param hm [ [2, 3], [2,4] ]
+     * @return boolean  - Define si pasa o no la condición
+     **/
+    public isCausal( ArrayList vt, ArrayList hm ){
+        Iterator it =  hm.iterator();
+        while( it.hasNext() ){
+            def t = it.next();
+            int l = t[0];
+            int tl = t[1];
+            if( ! ( tl <= vt[l] ) )
+                return false;
+        }
+        return true;
+    }
+    
+    public enableTxtMessage( boolean val){
+        frame.txtMessage.setEnabled(val);
     }
     
     /* Habilita todos los botones
@@ -97,7 +200,6 @@ class BroadAlgorithm {
         Iterator it = frame.proccessBtns.iterator();
         while( it.hasNext() ){
             def button = it.next();
-            print button.getText();
             if( button.getText() == proccess )
                 button.setEnabled(false);
         }
@@ -114,16 +216,13 @@ class BroadAlgorithm {
         return true;
     }
     
-    public receiveMessage( message ){
-        print "aplicar condiciones y actualizar\n";
-        addHistory( message );
-    }
+
     
     /** 
      *@param message Un objeto con multiples propiedades como proccess (proceso), msg (mensaje), history (array de historia), vector etc.
      **/
     public addHistory( message ){
-        frame.addHistory( message.proccess + ": " + message.msg );
+        frame.addHistory( ( message[0] + 1 ) + ": " + message[2] );
     }
     
 } 
