@@ -45,6 +45,7 @@ class BroadAlgorithm {
     public Gson gson = new Gson();
     public int vector_pos;
     public String name_proccess;
+    public String separator = "\n--------------------------------------------------------\n";
     
     public VT = [0,0,0,0];
     public hm = [];
@@ -62,8 +63,7 @@ class BroadAlgorithm {
         name_proccess = client.keySet().iterator().next();
         vector_pos = Integer.parseInt( name_proccess[1] ) - 1 ;
         
-        
-        addHistory("Inicializando Vector " + name_proccess + " = " + VT);
+        addHistory("Inicializando Vector " + name_proccess + " = " + VT + " y CI = [ ] " + separator);
     }
     
     /**
@@ -76,6 +76,7 @@ class BroadAlgorithm {
             hm = ci;
             message_send = [ vector_pos, VT[ vector_pos], msg, hm];
             ci = [];
+            addHistory(" Difusión del mensaje. \n    Mensaje: " + message_send  + "  \n   VT: " + VT);
             addHistory( message_send );
         }
         
@@ -109,15 +110,18 @@ class BroadAlgorithm {
         if( ! ( ( tk == ( VT[ k ] + 1 ) ) && isCausal(VT, hm) ) ){
             print "wait... Encolar el mensaje y con cada recepción intentar entregarlo (llamar a esta misma función)";
             addColaMensaje( message );
+            addHistory("***Esperando mensaje de p" + ( k + 1) + "*** "  + ". Cola de mensajes: " + cola_mensajes + separator);
             return false;
         }else{
-            addHistory( message );
             VT[k]++;
             ci = deleteKS( k, ci); 
             ci.add( [k, tk] );
             ci = deleteHmCi( hm, ci);
+            addHistory( "Recepción de mensaje de p" + ( k + 1) + ". \n    Mensaje: " + message + "\n    VT: " + VT + "\n    CI: " + ci   );
+            addHistory( message );
             
             receiveOtherMessages();
+            
             return true;
         }
     }
@@ -129,9 +133,11 @@ class BroadAlgorithm {
             
             for (int i=0; i<cola_mensajes.size(); i++) {  
                 def m = cola_mensajes[i];
+                cola_mensajes.remove( i );
                 if( receiveMessage( m ) ){
-                    cola_mensajes.remove( i );
                     break;
+                }else{
+                    cola_mensajes.add( m );
                 }
             }  
             
@@ -263,7 +269,7 @@ class BroadAlgorithm {
      *@param message Un objeto con multiples propiedades como proccess (proceso), msg (mensaje), history (array de historia), vector etc.
      **/
     public addHistory( ArrayList message ){
-        frame.addHistory( ( message[0] + 1 ) + ": " + message[2] );
+        frame.addHistory( ( message[0] + 1 ) + ": " + message[2] + separator);
     }
     
     public addHistory( String message ){
