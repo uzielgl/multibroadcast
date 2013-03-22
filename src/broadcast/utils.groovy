@@ -92,8 +92,8 @@ Gson gson = new Gson();
 //print 3.0 == 3;
 
 
-cola_mensajes = [];
- def addColaMensaje( message ){
+cola_mensajes =  [[1.0, 1.0, , [[2.0, 1.0], [3.0, 1.0]]], [3.0, 2.0, , [[1.0, 1.0]]], [1.0, 2.0, , [[3.0, 2.0], [0.0, 1.0]]] ];
+  def addColaMensaje( message ){
         Iterator it = cola_mensajes.iterator();
         def add = true;
         while( it.hasNext() ){
@@ -107,10 +107,10 @@ cola_mensajes = [];
             cola_mensajes.add( message );
     }
     
- def m1 = [1.0, 1.0, , [[0.0, 1.0]]];
- def m2 = [1, 1, , [[0.0, 1.0]]];
+    
  
-addColaMensaje( m1 );
-addColaMensaje( m2 );
+ 
+addColaMensaje(  [1.0, 2.0, , [[3.0, 2.0], [0.0, 1.0]]] );
+
 
 print cola_mensajes;

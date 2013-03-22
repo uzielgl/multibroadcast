@@ -137,7 +137,7 @@ class BroadAlgorithm {
                 if( receiveMessage( m ) ){
                     break;
                 }else{
-                    cola_mensajes.add( m );
+                    addColaMensaje( m );
                 }
             }  
             
@@ -205,11 +205,16 @@ class BroadAlgorithm {
      * @return boolean  - Define si pasa o no la condición
      **/
     public isCausal( ArrayList vt, ArrayList hm ){
+        println "vt en causal : " + vt;
+        println "hm en causal : " + hm;
         Iterator it =  hm.iterator();
         while( it.hasNext() ){
             def t = it.next();
             int l = t[0];
             int tl = t[1];
+            print tl + " <= " + vt[l];
+            println tl <= vt[l]
+            
             if( ! ( tl <= vt[l] ) )
                 return false;
         }
