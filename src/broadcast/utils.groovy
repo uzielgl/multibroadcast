@@ -90,3 +90,12 @@ Gson gson = new Gson();
 //print gson.fromJson( gson.toJson( [1, 1, 1, []] ), ArrayList.class );
 
 //print 3.0 == 3;
+
+
+
+
+def a = [1,2,3,4];
+a.remove(0)
+print a
+
+

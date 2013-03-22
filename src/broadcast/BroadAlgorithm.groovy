@@ -44,11 +44,14 @@ class BroadAlgorithm {
     public MainWindow frame;
     public Gson gson = new Gson();
     public int vector_pos;
+    public String name_proccess;
     
     public VT = [0,0,0,0];
     public hm = [];
     public ci = [];
     public message_send = [];
+    
+    public cola_mensajes = []; 
     
     public BroadAlgorithm( MainWindow frame ){
         this.frame = frame;
@@ -56,8 +59,11 @@ class BroadAlgorithm {
         client = config.get("client");
         servers = config.get("servers");
         
-        vector_pos = Integer.parseInt( client.keySet().iterator().next()[1] ) - 1 ;
+        name_proccess = client.keySet().iterator().next();
+        vector_pos = Integer.parseInt( name_proccess[1] ) - 1 ;
         
+        
+        addHistory("Inicializando Vector " + name_proccess + " = " + VT);
     }
     
     /**
@@ -102,14 +108,49 @@ class BroadAlgorithm {
         def hm = message[3];
         if( ! ( ( tk == ( VT[ k ] + 1 ) ) && isCausal(VT, hm) ) ){
             print "wait... Encolar el mensaje y con cada recepción intentar entregarlo (llamar a esta misma función)";
+            addColaMensaje( message );
+            return false;
         }else{
             addHistory( message );
             VT[k]++;
             ci = deleteKS( k, ci); 
-            
             ci.add( [k, tk] );
             ci = deleteHmCi( hm, ci);
+            
+            receiveOtherMessages();
+            return true;
         }
+    }
+    
+    public receiveOtherMessages(){
+        def se_entrego_mensaje = true;
+        while( se_entrego_mensaje ){
+            se_entrego_mensaje = false;
+            
+            for (int i=0; i<cola_mensajes.size(); i++) {  
+                def m = cola_mensajes[i];
+                if( receiveMessage( m ) ){
+                    cola_mensajes.remove( i );
+                    break;
+                }
+            }  
+            
+        }
+    }
+    
+    /** Ingresa mensajes no repetidos a la cola*/
+    public addColaMensaje( message ){
+        Iterator it = cola_mensajes.iterator();
+        def add = true;
+        while( it.hasNext() ){
+            def msg = it.next();
+            if( msg[0] == message[0] && msg[1] == message[1] ){
+                add = false;
+                break;
+            }
+        }
+        if( add == true) 
+            cola_mensajes.add( message );
     }
     
     /** Elimina todas las tuplas de Hm que están en Ci
@@ -221,9 +262,14 @@ class BroadAlgorithm {
     /** 
      *@param message Un objeto con multiples propiedades como proccess (proceso), msg (mensaje), history (array de historia), vector etc.
      **/
-    public addHistory( message ){
+    public addHistory( ArrayList message ){
         frame.addHistory( ( message[0] + 1 ) + ": " + message[2] );
     }
+    
+    public addHistory( String message ){
+        frame.addHistory( message );
+    }
+    
     
 } 
 
