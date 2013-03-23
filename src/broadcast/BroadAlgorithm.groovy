@@ -102,6 +102,9 @@ class BroadAlgorithm {
     }
     
     public receiveMessage( message ){
+        print "receiveMessage";
+        println message;
+        if (message == null) return true;
         print "recibe";
         println message;
         int k = message[0];
@@ -120,12 +123,37 @@ class BroadAlgorithm {
             addHistory( "Recepción de mensaje de p" + ( k + 1) + ". \n    Mensaje: " + message + "\n    VT: " + VT + "\n    CI: " + ci   );
             addHistory( message );
             
-            receiveOtherMessages();
+            eliminaDeCola(message);
+            for( def x = 0 ; x< cola_mensajes.size(); x++ ){
+                def m = cola_mensajes[x];
+                receiveMessage( m );
+            }
             
             return true;
         }
     }
     
+	/** Pone a null el mensaje que se le pasa de la cola de mensajes*/
+    public eliminaDeCola(message){
+        for( def x = 0 ; x< cola_mensajes.size(); x++ ){
+            def m = cola_mensajes[x];
+            if( m == null ) continue;
+            if( m[0] == message[0] && m[1] == message[1] )
+                cola_mensajes[x] = null;
+        }
+    }
+    public receiveOtherMessages(){
+        for( def x = 0 ; x< cola_mensajes.size(); x++ ){
+            def m = cola_mensajes[x];
+            if( m == null ) continue;
+            cola_mensajes[x] = null;
+            if ( receiveMessage( m ) ){
+            }else{
+                addColaMensaje(m, x);
+            }
+        }
+    }
+    /*
     public receiveOtherMessages(){
         def se_entrego_mensaje = true;
         while( se_entrego_mensaje ){
@@ -133,16 +161,18 @@ class BroadAlgorithm {
             
             for (int i=0; i<cola_mensajes.size(); i++) {  
                 def m = cola_mensajes[i];
-                cola_mensajes.remove( i );
+                if( m == null) continue;
+                
+                cola_mensajes[i] = null;
                 if( receiveMessage( m ) ){
                     break;
                 }else{
-                    addColaMensaje( m );
+                    addColaMensaje( m, i );
                 }
             }  
-            
         }
-    }
+    }*/
+    
     
     /** Ingresa mensajes no repetidos a la cola*/
     public addColaMensaje( message ){
@@ -150,6 +180,7 @@ class BroadAlgorithm {
         def add = true;
         while( it.hasNext() ){
             def msg = it.next();
+            if( msg == null ) continue;
             if( msg[0] == message[0] && msg[1] == message[1] ){
                 add = false;
                 break;
@@ -157,6 +188,10 @@ class BroadAlgorithm {
         }
         if( add == true) 
             cola_mensajes.add( message );
+    }
+    
+    public addColaMensaje( message, int pos){
+        cola_mensajes[pos] = message;
     }
     
     /** Elimina todas las tuplas de Hm que están en Ci
