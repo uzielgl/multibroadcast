@@ -54,7 +54,9 @@ public class MainWindow extends javax.swing.JFrame {
     public MainWindow() {
         //Para crear mapas:
         //Map<String,HashMap> tmp = new HashMap<String,HashMap>();
+        
         initComponents();
+        
         
         
         //loadConfig( new File( "C:\\Users\\uzielgl\\Documents\\p1.txt" ) );
@@ -97,6 +99,7 @@ public class MainWindow extends javax.swing.JFrame {
         jFileChooser1 = new javax.swing.JFileChooser();
         jScrollPane2 = new javax.swing.JScrollPane();
         txtHistory = new javax.swing.JTextArea();
+        btnCreate = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu2 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -132,6 +135,13 @@ public class MainWindow extends javax.swing.JFrame {
         txtHistory.setRows(5);
         jScrollPane2.setViewportView(txtHistory);
 
+        btnCreate.setText("Crear");
+        btnCreate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCreateActionPerformed(evt);
+            }
+        });
+
         jMenu2.setText("Archivo");
 
         jMenuItem1.setText("Abrir configuración...");
@@ -153,10 +163,14 @@ public class MainWindow extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 392, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnCreate)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(pnlSendButtons, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -170,8 +184,13 @@ public class MainWindow extends javax.swing.JFrame {
                                 .addGap(102, 102, 102)
                                 .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addComponent(jScrollPane2))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(37, 37, 37)
+                                .addComponent(btnCreate))))
                     .addComponent(pnlSendButtons, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -190,6 +209,30 @@ public class MainWindow extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
+    private void btnCreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateActionPerformed
+        // TODO add your handling code here:
+        btnCreate.setEnabled(false);
+        txtMessage.setEnabled(false);
+        enableAllButtons();
+        broad.createMessage( txtMessage.getText() );
+    }//GEN-LAST:event_btnCreateActionPerformed
+
+    public void enableAllButtons(){
+        Iterator it = proccessBtns.iterator();
+        while(it.hasNext()){
+            javax.swing.JButton btn = (javax.swing.JButton) it.next();
+            btn.setEnabled(true);
+        }
+    }
+    /** Deshabilita todos los botones de procesos*/
+    public void disableAllButtons(){
+        Iterator it = proccessBtns.iterator();
+        while(it.hasNext()){
+            javax.swing.JButton btn = (javax.swing.JButton) it.next();
+            btn.setEnabled(false);
+        }
+    }
+    
     public void loadConfig( File config_file){
         try{
             Scanner config_scanner = new Scanner( config_file );
@@ -219,6 +262,7 @@ public class MainWindow extends javax.swing.JFrame {
         }
         pnlSendButtons.revalidate();
         pnlSendButtons.repaint();
+        disableAllButtons();
     }
     
     public void addAButton(String text, Container container) {
@@ -276,6 +320,7 @@ public class MainWindow extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    public javax.swing.JButton btnCreate;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JFileChooser jFileChooser1;

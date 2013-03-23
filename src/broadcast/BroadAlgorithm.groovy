@@ -66,18 +66,25 @@ class BroadAlgorithm {
         addHistory("Inicializando Vector " + name_proccess + " = " + VT + " y CI = [ ] " + separator);
     }
     
+    
+    /* Crea el mensaje que será enviado a cada proceso, se hace pues su histórico no se modifica
+     * */
+    public createMessage( String msg ){
+        VT[ vector_pos ]++;
+        hm = ci;
+        message_send = [ vector_pos, VT[ vector_pos], msg, hm];
+        ci = [];
+        addHistory(" Difusión del mensaje. \n    Mensaje: " + message_send  + "  \n   VT: " + VT);
+        addHistory( message_send );
+    }
+    
     /**
      * proccess es el proceso al que se envia p1|p2|p3|p4 
      **/
     public sendMessage(proccess, msg){
         //Se debe de mostrar el mensaje enviado cada vez que den click a Enviar a ? 
         if( allActives() ){ //Aquí es en la difusión del mensaje
-            VT[ vector_pos ]++;
-            hm = ci;
-            message_send = [ vector_pos, VT[ vector_pos], msg, hm];
-            ci = [];
-            addHistory(" Difusión del mensaje. \n    Mensaje: " + message_send  + "  \n   VT: " + VT);
-            addHistory( message_send );
+            //createMessage( msg );
         }
         
         //String pro = client.keySet().iterator().next(); //El proceso actual
@@ -96,8 +103,9 @@ class BroadAlgorithm {
         disableBtnProccess( proccess  );
         
         if( allDisableBtnsProccess() ){
-            enableAllBtnsProccess();
+            //enableAllBtnsProccess();
             enableTxtMessage(true);
+            frame.btnCreate.setEnabled(true);
         }
     }
     
@@ -263,6 +271,7 @@ class BroadAlgorithm {
     /* Habilita todos los botones
      **/
     public enableAllBtnsProccess(){
+        frame.btnCreate.setEnabled(true);
         Iterator it = frame.proccessBtns.iterator();
         while( it.hasNext() ){
             def button = it.next();

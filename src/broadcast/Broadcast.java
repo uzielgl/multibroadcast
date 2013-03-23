@@ -18,7 +18,8 @@ public class Broadcast {
         // TODO code application logic here
       
         
-        MainWindow main4 = new MainWindow(   );
+        /*MainWindow main4 = new MainWindow( new File("p1.txt"), "p1"  );*/
+        MainWindow main4 = new MainWindow( );
         main4.setVisible(true);
         
     }
